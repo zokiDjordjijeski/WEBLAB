@@ -8,6 +8,15 @@
             width: 800px;
             margin: auto;
         }
+
+        li {
+            display: flex;
+            justify-content: space-evenly;
+        }
+
+        /*form {*/
+        /*    display: inline-block;*/
+        /*}*/
     </style>
 </head>
 <body>
@@ -16,46 +25,47 @@
 </header>
 <main>
     <h2>Choose an event:</h2>
-    <!-- Display radio buttons for each event,
-            the value should be the event name
-            and the displayed text should be Name: <event_name>, Description: <event_description>, Rating: <popularity_score> -->
-    <!--    <div>-->
-    <!--        <input-->
-    <!--                style="display: block"-->
-    <!--                type="radio"-->
-    <!--                name="lab"-->
-    <!--                th:each="event: ${events}"-->
-    <!--                th:value="${event.name}"-->
-    <!--                th:text="'Name: ' + ${event.name} + ', Description: ' + ${event.description} + ', Rating: ' + ${event.popularityScore}">-->
-    <!--    </div>-->
-
-    <!--    <h2>Choose number of tickets:</h2>-->
-    <!--    <input type="number" name="numTickets" min="1" max="10"><br/>-->
-    <!--    <br/>-->
-    <!--    <input type="submit" value="Submit">-->
 
     <form th:action="@{/test}" th:method="GET">
         <label>Press button to reset list</label>
         <button type="submit">Reset</button>
     </form>
 
+    <form>
+        <label>Press button to add event</label>
+        <a href="/events/add">Add</a>
+    </form>
+
+    <form th:action="@{/events}">
+        <label>Press button to get all event locations</label>
+        <button type="submit">Show</button>
+    </form>
+
+    <div th:if="${error}" style="color: red;font-weight: bold">
+        <p th:text="${error}"></p>
+    </div>
+
     <form th:action="@{/test/searchByText}" th:method="POST">
         <label for="text">Enter the text to filter Events by: </label>
-        <input name="text" id="text" />
+        <input name="text" id="text"/>
         <button type="submit">Search by Text</button>
     </form>
 
     <form th:action="@{/test/searchByRating}" th:method="POST">
         <label for="rating">Enter the rating to filter Events by: </label>
-        <input name="rating" id="rating" />
+        <input name="rating" id="rating"/>
         <button type="submit">Search by Rating</button>
     </form>
 
     <div th:if="${textSearchResults}">
         <h3>Filtered Events by Text:</h3>
         <ul>
-            <li th:each="event : ${textSearchResults}"
-                th:text="'Name: ' + ${event.name} + ', Description: ' + ${event.description} + ', Rating: ' + ${event.popularityScore}">
+            <li th:each="event : ${events}">
+                <span th:text="'Name: ' + ${event.name} + ', Description: ' + ${event.description} + ', Rating: ' + ${event.popularityScore}"></span>
+                <a th:href="@{/events/edit-event/{eventId} (eventId=${event.getId()}) }">Edit</a>
+                <form th:action="@{/events/delete/{id} (id=${event.getId()}) }" th:method="POST">
+                    <button type="submit">Delete</button>
+                </form>
             </li>
         </ul>
     </div>
@@ -63,8 +73,12 @@
     <div th:if="${ratingSearchResults}">
         <h3>Filtered Events by Rating:</h3>
         <ul>
-            <li th:each="event : ${ratingSearchResults}"
-                th:text="'Name: ' + ${event.name} + ', Description: ' + ${event.description} + ', Rating: ' + ${event.popularityScore}">
+            <li th:each="event : ${events}">
+                <span th:text="'Name: ' + ${event.name} + ', Description: ' + ${event.description} + ', Rating: ' + ${event.popularityScore}"></span>
+                <a th:href="@{/events/edit-event/{eventId} (eventId=${event.getId()}) }">Edit</a>
+                <form th:action="@{/events/delete/{id} (id=${event.getId()}) }" th:method="POST">
+                    <button type="submit">Delete</button>
+                </form>
             </li>
         </ul>
     </div>
@@ -72,12 +86,24 @@
     <div th:if="${events}">
         <h3>Filtered Events by Rating:</h3>
         <ul>
-            <li th:each="event : ${events}"
-                th:text="'Name: ' + ${event.name} + ', Description: ' + ${event.description} + ', Rating: ' + ${event.popularityScore}">
+            <li th:each="event : ${events}">
+                <span th:text="'Name: ' + ${event.name} + ', Description: ' + ${event.description} + ', Rating: ' + ${event.popularityScore}"></span>
+                <a th:href="@{/events/edit-event/{eventId} (eventId=${event.getId()}) }">Edit</a>
+                <form th:action="@{/events/delete/{id} (id=${event.getId()}) }" th:method="POST">
+                    <button type="submit">Delete</button>
+                </form>
             </li>
         </ul>
     </div>
 
+    <div th:if="${locations}">
+        <h3>Locations</h3>
+        <ul>
+            <li th:each="location: ${locations}">
+                <span th:text="'Name: ' + ${location.name} + ', Description: ' + ${location.description}"></span>
+            </li>
+        </ul>
+    </div>
 
 </main>
 </body>

@@ -1,4 +1,4 @@
-package com.demotest.wplab1.web;
+package com.demotest.wplab1.web.servlet;
 
 import com.demotest.wplab1.model.Event;
 import com.demotest.wplab1.service.impl.EventServiceImpl;
@@ -32,7 +32,7 @@ public class EventListServlet extends HttpServlet {
                 .buildExchange(req, resp);
         WebContext webContext = new WebContext(webExchange);
 
-        webContext.setVariable("events", this.eventService.listAll());
+        webContext.setVariable("events", this.eventService.listAll().orElseThrow(RuntimeException::new));
 
         this.templateEngine.process("listEvents.html", webContext, resp.getWriter());
     }
@@ -49,16 +49,16 @@ public class EventListServlet extends HttpServlet {
 
         if (path.equals("/test/searchByText")) {
             String text = req.getParameter("text");
-            events = this.eventService.searchEvent(text);
+            events = this.eventService.searchEvent(text).orElseThrow(RuntimeException::new);
             webContext.setVariable("textSearchResults", events);
         } else if (path.equals("/test/searchByRating")) {
             double rating = Double.parseDouble(req.getParameter("rating"));
-            events = this.eventService.listAll().stream()
+            events = this.eventService.listAll().orElseThrow(RuntimeException::new).stream()
                     .filter(event -> event.getPopularityScore() >= rating)
                     .toList();
             webContext.setVariable("ratingSearchResults", events);
         } else {
-            events = this.eventService.listAll();
+            events = this.eventService.listAll().orElseThrow(RuntimeException::new);
             webContext.setVariable("events", events);
         }
 

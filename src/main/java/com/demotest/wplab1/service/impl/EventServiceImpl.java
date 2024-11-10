@@ -6,6 +6,7 @@ import com.demotest.wplab1.service.EventService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -17,12 +18,22 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Event> listAll() {
-        return this.eventRepository.findAll();
+    public Optional<List<Event>> listAll() {
+        return Optional.of(this.eventRepository.findAll());
     }
 
     @Override
-    public List<Event> searchEvent(String text) {
-        return this.eventRepository.searchEvents(text);
+    public Optional<List<Event>> searchEvent(String text) {
+        return Optional.of(this.eventRepository.searchEvents(text));
+    }
+
+    @Override
+    public Optional<Event> addOrUpdateEvent(Event event) {
+        return Optional.of(this.eventRepository.addOrUpdateEvent(event));
+    }
+
+    @Override
+    public void deleteEvent(Long id) {
+        this.eventRepository.deleteEvent(id);
     }
 }

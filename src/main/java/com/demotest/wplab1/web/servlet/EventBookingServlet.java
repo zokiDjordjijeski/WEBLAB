@@ -1,4 +1,4 @@
-package com.demotest.wplab1.web;
+package com.demotest.wplab1.web.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
