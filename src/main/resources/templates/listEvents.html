@@ -36,7 +36,7 @@
         <a href="/events/add">Add</a>
     </form>
 
-    <form th:action="@{/events}">
+    <form th:action="@{/events/locations}">
         <label>Press button to get all event locations</label>
         <button type="submit">Show</button>
     </form>
@@ -57,10 +57,21 @@
         <button type="submit">Search by Rating</button>
     </form>
 
+
+    <form th:action="@{/events/search-location}" th:method="POST">
+        <label for="location">Select the location you want to filter by: </label>
+        <select th:if="${locations_for_filter != null}" name="location" id="location">
+            <option disabled> Select an option</option>
+            <option th:each="location : ${locations_for_filter}" th:text="${location.getName()}" th:value="${location.getId()}"></option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+
     <div th:if="${textSearchResults}">
         <h3>Filtered Events by Text:</h3>
         <ul>
-            <li th:each="event : ${events}">
+            <li th:each="event : ${textSearchResults}">
                 <span th:text="'Name: ' + ${event.name} + ', Description: ' + ${event.description} + ', Rating: ' + ${event.popularityScore}"></span>
                 <a th:href="@{/events/edit-event/{eventId} (eventId=${event.getId()}) }">Edit</a>
                 <form th:action="@{/events/delete/{id} (id=${event.getId()}) }" th:method="POST">
@@ -73,7 +84,7 @@
     <div th:if="${ratingSearchResults}">
         <h3>Filtered Events by Rating:</h3>
         <ul>
-            <li th:each="event : ${events}">
+            <li th:each="event : ${ratingSearchResults}">
                 <span th:text="'Name: ' + ${event.name} + ', Description: ' + ${event.description} + ', Rating: ' + ${event.popularityScore}"></span>
                 <a th:href="@{/events/edit-event/{eventId} (eventId=${event.getId()}) }">Edit</a>
                 <form th:action="@{/events/delete/{id} (id=${event.getId()}) }" th:method="POST">
@@ -100,6 +111,15 @@
         <h3>Locations</h3>
         <ul>
             <li th:each="location: ${locations}">
+                <span th:text="'Name: ' + ${location.name} + ', Description: ' + ${location.description}"></span>
+            </li>
+        </ul>
+    </div>
+
+    <div th:if="${locations_if_filter}">
+        <h3>Locations</h3>
+        <ul>
+            <li th:each="location: ${locations_if_filter}">
                 <span th:text="'Name: ' + ${location.name} + ', Description: ' + ${location.description}"></span>
             </li>
         </ul>

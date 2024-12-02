@@ -5,6 +5,7 @@ import com.demotest.wplab1.model.Location;
 import com.demotest.wplab1.service.impl.EventServiceImpl;
 import com.demotest.wplab1.service.impl.LocationServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +29,21 @@ public class EventController {
         if (error != null) {
             model.addAttribute("error", error);
         }
+        List<Event> eventList = this.eventService.listAll().orElseThrow(() -> new RuntimeException("There are no locations"));
+        List<Location> locationList = this.locationService.findAll().orElseThrow(() -> new RuntimeException("There are no locations"));
+        model.addAttribute("events", eventList);
+        model.addAttribute("locations_for_filter", locationList);
+        return "listEvents";
+    }
+
+    @GetMapping(path = "/locations")
+    public String getLocationsPage(@RequestParam(required = false) String error, Model model) {
+        if (error != null) {
+            model.addAttribute("error", error);
+        }
         List<Location> locationList = this.locationService.findAll().orElseThrow(() -> new RuntimeException("There are no locations"));
         model.addAttribute("locations", locationList);
+        model.addAttribute("locations_for_filter", locationList);
         return "listEvents";
     }
 
@@ -65,7 +79,7 @@ public class EventController {
 
     @GetMapping(path = "/edit-event/{eventId}")
     public String getEditEventForm(@PathVariable Long eventId, Model model) {
-        Event event = this.eventService.listAll().orElseThrow(RuntimeException::new).stream().filter(x -> x.getId().equals(eventId)).findFirst().orElse(null);
+        Event event = this.eventService.findById(eventId).orElseThrow(() -> new RuntimeException("There is no event"));
         if (event == null) {
             return "redirect:/events?error=EventNotFound";
         }
@@ -93,6 +107,7 @@ public class EventController {
         return "redirect:/test";
     }
 
+    @Transactional
     @PostMapping(path = "/delete/{id}")
     public String deleteEvent(@PathVariable Long id) {
         Event event = this.eventService.listAll().orElseThrow(() -> new RuntimeException("There is no event with id: " + id)).stream().filter(x -> x.getId().equals(id)).findFirst().orElse(null);
@@ -101,5 +116,13 @@ public class EventController {
         }
         this.eventService.deleteEvent(id);
         return "redirect:/";
+    }
+
+    @PostMapping(path = "/search-location")
+    public String searchLocation(@RequestParam("location") Long id, Model model) {
+        List<Event> locationList = this.eventService.listAll().orElseThrow(() -> new RuntimeException("There are no locations"));
+        model.addAttribute("locations_if_filter", locationList.stream().filter(x -> x.getId() == id).toList());
+        model.addAttribute("locations_for_filter", locationList);
+        return "listEvents";
     }
 }

@@ -1,4 +1,4 @@
-package com.demotest.wplab1.repository;
+package com.demotest.wplab1.repository.in_memory;
 
 import com.demotest.wplab1.bootstrap.DataHolder;
 import com.demotest.wplab1.model.Event;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class EventRepository {
+public class EventRepositoryInMemory {
 
     public List<Event> findAll() {
         return DataHolder.events;

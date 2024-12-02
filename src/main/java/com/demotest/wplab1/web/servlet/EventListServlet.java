@@ -2,6 +2,7 @@ package com.demotest.wplab1.web.servlet;
 
 import com.demotest.wplab1.model.Event;
 import com.demotest.wplab1.service.impl.EventServiceImpl;
+import com.demotest.wplab1.service.impl.LocationServiceImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,10 +19,12 @@ import java.util.List;
 @WebServlet(name = "EventListServlet", urlPatterns = {"", "/test", "/test/searchByText", "/test/searchByRating"})
 public class EventListServlet extends HttpServlet {
     private final EventServiceImpl eventService;
+    private final LocationServiceImpl locationService;
     protected final SpringTemplateEngine templateEngine;
 
-    public EventListServlet(EventServiceImpl eventService, SpringTemplateEngine templateEngine) {
+    public EventListServlet(EventServiceImpl eventService, LocationServiceImpl locationService, SpringTemplateEngine templateEngine) {
         this.eventService = eventService;
+        this.locationService = locationService;
         this.templateEngine = templateEngine;
     }
 
@@ -33,7 +36,7 @@ public class EventListServlet extends HttpServlet {
         WebContext webContext = new WebContext(webExchange);
 
         webContext.setVariable("events", this.eventService.listAll().orElseThrow(RuntimeException::new));
-
+        webContext.setVariable("locations_for_filter", this.locationService.findAll().orElseThrow(RuntimeException::new));
         this.templateEngine.process("listEvents.html", webContext, resp.getWriter());
     }
 
@@ -61,7 +64,7 @@ public class EventListServlet extends HttpServlet {
             events = this.eventService.listAll().orElseThrow(RuntimeException::new);
             webContext.setVariable("events", events);
         }
-
+        webContext.setVariable("locations_for_filter", this.locationService.findAll().orElseThrow(RuntimeException::new));
         this.templateEngine.process("listEvents.html", webContext, resp.getWriter());
     }
 }

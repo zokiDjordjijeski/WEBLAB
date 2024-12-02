@@ -18,27 +18,27 @@
 </head>
 <body>
 
-<form th:action="@{${event.id != null ? '/events/edit/' + event.id : '/events/add'}}" th:method="POST">
+<form th:action="@{${event.id == null ? '/events/add' : '/events/edit/'  + event.id }}" th:method="POST">
     <div>
         <label for="name">Name</label>
-        <input id="name" name="name" th:value="${event.name != null ? event.name : ''}">
+        <input id="name" name="name" th:value="${event.name == null ? '' : event.name}">
     </div>
     <div>
         <label for="description">Description</label>
-        <input id="description" name="description" th:value="${event.description != null ? event.description : ''}">
+        <input id="description" name="description" th:value="${event.description == null ? '' : event.description}">
     </div>
     <div>
         <label for="popularityScore">Popularity Score</label>
-        <input id="popularityScore" name="popularityScore" th:value="${event.popularityScore != null ? event.popularityScore : ''}">
+        <input id="popularityScore" name="popularityScore" th:value="${event.popularityScore == null ? '' : event.popularityScore}">
     </div>
     <div>
         <label for="locationId">Location ID</label>
         <select name="locationId" id="locationId" th:if="${locations}">
-            <option value="" disabled th:selected="${event.location.id == null}">Select Location</option>
+            <option value="" disabled th:selected="${event.getLocation() == null}">Select Location</option>
             <option th:each="location : ${locations}"
                     th:value="${location.getId()}"
                     th:text="${location.getId()}"
-                    th:selected="${location.getId() == event.location.id}"></option>
+                    th:selected="${event.getLocation() != null &&  location.getId() == event.getLocation().getId()}"></option>
         </select>
     </div>
     <div>

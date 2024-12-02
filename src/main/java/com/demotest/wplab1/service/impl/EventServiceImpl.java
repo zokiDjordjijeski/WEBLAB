@@ -1,7 +1,7 @@
 package com.demotest.wplab1.service.impl;
 
 import com.demotest.wplab1.model.Event;
-import com.demotest.wplab1.repository.EventRepository;
+import com.demotest.wplab1.repository.jpa.EventRepository;
 import com.demotest.wplab1.service.EventService;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +17,10 @@ public class EventServiceImpl implements EventService {
         this.eventRepository = eventRepository;
     }
 
+    public Optional<Event> findById(Long id) {
+        return this.eventRepository.findById(id);
+    }
+
     @Override
     public Optional<List<Event>> listAll() {
         return Optional.of(this.eventRepository.findAll());
@@ -24,16 +28,16 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Optional<List<Event>> searchEvent(String text) {
-        return Optional.of(this.eventRepository.searchEvents(text));
+        return Optional.of(this.eventRepository.findAllByName(text));
     }
 
     @Override
     public Optional<Event> addOrUpdateEvent(Event event) {
-        return Optional.of(this.eventRepository.addOrUpdateEvent(event));
+        return Optional.of(this.eventRepository.save(event));
     }
 
     @Override
     public void deleteEvent(Long id) {
-        this.eventRepository.deleteEvent(id);
+        this.eventRepository.deleteEventById(id);
     }
 }
