@@ -1,7 +1,9 @@
 package com.demotest.wplab1.web.controller;
 
+import com.demotest.wplab1.model.Category;
 import com.demotest.wplab1.model.Event;
 import com.demotest.wplab1.model.Location;
+import com.demotest.wplab1.service.impl.CategoryServiceImpl;
 import com.demotest.wplab1.service.impl.EventServiceImpl;
 import com.demotest.wplab1.service.impl.LocationServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,10 +20,12 @@ public class EventController {
 
     private final LocationServiceImpl locationService;
     private final EventServiceImpl eventService;
+    private final CategoryServiceImpl categoryService;
 
-    public EventController(LocationServiceImpl locationService, EventServiceImpl eventService) {
+    public EventController(LocationServiceImpl locationService, EventServiceImpl eventService, CategoryServiceImpl categoryService) {
         this.locationService = locationService;
         this.eventService = eventService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping
@@ -60,8 +64,10 @@ public class EventController {
     @GetMapping(path = "/add")
     public String addEvent(Model model) {
         List<Location> locationList = this.locationService.findAll().orElseThrow(() -> new RuntimeException("There are no locations"));
+        List<Category> categoryList = this.categoryService.findAllCategories();
         model.addAttribute("event", new Event());
         model.addAttribute("locations", locationList);
+        model.addAttribute("categories", categoryList);
         return "add-event";
     }
 
@@ -69,10 +75,12 @@ public class EventController {
     public String saveEvent(@RequestParam String name,
                             @RequestParam String description,
                             @RequestParam Double popularityScore,
-                            @RequestParam Long locationId) {
+                            @RequestParam Long locationId,
+                            @RequestParam Long categoryId) {
         List<Location> locationList = this.locationService.findAll().orElseThrow(() -> new RuntimeException("There are no locations"));
         Location location = locationList.stream().filter(x -> x.getId().equals(locationId)).findFirst().orElseThrow(() -> new RuntimeException("There is no location with id: " + locationId));
-        Event event = new Event(name, description, popularityScore, location);
+        Category category = this.categoryService.findAllCategories().stream().filter(x -> x.getId().equals(categoryId)).findFirst().orElse(null);
+        Event event = new Event(name, description, popularityScore, location, category);
         this.eventService.addOrUpdateEvent(event);
         return "redirect:/events";
     }
@@ -80,12 +88,14 @@ public class EventController {
     @GetMapping(path = "/edit-event/{eventId}")
     public String getEditEventForm(@PathVariable Long eventId, Model model) {
         Event event = this.eventService.findById(eventId).orElseThrow(() -> new RuntimeException("There is no event"));
+        List<Category> categoryList = this.categoryService.findAllCategories();
         if (event == null) {
             return "redirect:/events?error=EventNotFound";
         }
         List<Location> locationList = this.locationService.findAll().orElseThrow(() -> new RuntimeException("There are no locations"));
         model.addAttribute("event", event);
         model.addAttribute("locations", locationList);
+        model.addAttribute("categories", categoryList);
         return "add-event";
     }
 
@@ -100,9 +110,10 @@ public class EventController {
         String description = request.getParameter("description");
         Double popularityScore = Double.parseDouble(request.getParameter("popularityScore"));
         Long locationId = Long.parseLong(request.getParameter("locationId"));
+        Long categoryId = Long.parseLong(request.getParameter("categoryId"));
         Location location = this.locationService.findAll().orElseThrow(RuntimeException::new).stream().filter(x -> x.getId().equals(locationId)).findFirst().orElse(null);
-
-        this.eventService.addOrUpdateEvent(new Event(name, description, popularityScore, location));
+        Category category = this.categoryService.findAllCategories().stream().filter(x -> x.getId().equals(categoryId)).findFirst().orElse(null);
+        this.eventService.addOrUpdateEvent(new Event(name, description, popularityScore, location, category));
 
         return "redirect:/test";
     }
