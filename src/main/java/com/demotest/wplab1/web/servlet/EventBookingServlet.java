@@ -28,7 +28,7 @@ public class EventBookingServlet extends HttpServlet {
                 .buildExchange(req, resp);
 
         WebContext webContext = new WebContext(webExchange);
-
+        resp.setContentType("text/html");
 
         this.springTemplateEngine.process("bookingConfirmation.html", webContext, resp.getWriter());
     }

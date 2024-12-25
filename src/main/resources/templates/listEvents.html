@@ -73,6 +73,7 @@
         <ul>
             <li th:each="event : ${textSearchResults}">
                 <span th:text="'Name: ' + ${event.name} + ', Description: ' + ${event.description} + ', Rating: ' + ${event.popularityScore}"></span>
+                here
                 <a sec:authorize="hasRole('ADMIN')" th:href="@{/events/edit-event/{eventId} (eventId=${event.getId()}) }">Edit</a>
                 <form sec:authorize="hasRole('ADMIN')" th:action="@{/events/delete/{id} (id=${event.getId()}) }" th:method="POST">
                     <button type="submit">Delete</button>
@@ -86,8 +87,8 @@
         <ul>
             <li th:each="event : ${ratingSearchResults}">
                 <span th:text="'Name: ' + ${event.name} + ', Description: ' + ${event.description} + ', Rating: ' + ${event.popularityScore}"></span>
-                <a th:href="@{/events/edit-event/{eventId} (eventId=${event.getId()}) }">Edit</a>
-                <form th:action="@{/events/delete/{id} (id=${event.getId()}) }" th:method="POST">
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/events/edit-event/{eventId} (eventId=${event.getId()}) }">Edit</a>
+                <form  sec:authorize="hasRole('ADMIN')" th:action="@{/events/delete/{id} (id=${event.getId()}) }" th:method="POST">
                     <button type="submit">Delete</button>
                 </form>
             </li>
@@ -99,8 +100,8 @@
         <ul>
             <li th:each="event : ${events}">
                 <span th:text="'Name: ' + ${event.name} + ', Description: ' + ${event.description} + ', Rating: ' + ${event.popularityScore}"></span>
-                <a th:href="@{/events/edit-event/{eventId} (eventId=${event.getId()}) }">Edit</a>
-                <form th:action="@{/events/delete/{id} (id=${event.getId()}) }" th:method="POST">
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/events/edit-event/{eventId} (eventId=${event.getId()}) }">Edit</a>
+                <form sec:authorize="hasRole('ADMIN')" th:action="@{/events/delete/{id} (id=${event.getId()}) }" th:method="POST">
                     <button type="submit">Delete</button>
                 </form>
             </li>

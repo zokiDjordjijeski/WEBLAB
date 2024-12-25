@@ -34,6 +34,7 @@ public class EventListServlet extends HttpServlet {
                 .buildApplication(getServletContext())
                 .buildExchange(req, resp);
         WebContext webContext = new WebContext(webExchange);
+        resp.setContentType("text/html");
 
         webContext.setVariable("events", this.eventService.listAll().orElseThrow(RuntimeException::new));
         webContext.setVariable("locations_for_filter", this.locationService.findAll().orElseThrow(RuntimeException::new));
