@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Add-Event-Page</title>
+    <style>
+        body {
+            width: 800px;
+            margin: auto;
+        }
+
+        li {
+            display: flex;
+            justify-content: space-evenly;
+        }
+    </style>
+</head>
+<body>
+
+<form th:action="@{${event.id == null ? '/events/add' : '/events/edit/'  + event.id }}" th:method="POST">
+    <div>
+        <label for="name">Name</label>
+        <input id="name" name="name" th:value="${event.name == null ? '' : event.name}">
+    </div>
+    <div>
+        <label for="description">Description</label>
+        <input id="description" name="description" th:value="${event.description == null ? '' : event.description}">
+    </div>
+    <div>
+        <label for="popularityScore">Popularity Score</label>
+        <input id="popularityScore" name="popularityScore" th:value="${event.popularityScore == null ? '' : event.popularityScore}">
+    </div>
+    <div>
+        <label for="locationId">Location ID</label>
+        <select name="locationId" id="locationId" th:if="${locations}">
+            <option value="" disabled th:selected="${event.getLocation() == null}">Select Location</option>
+            <option th:each="location : ${locations}"
+                    th:value="${location.getId()}"
+                    th:text="${location.getId()}"
+                    th:selected="${event.getLocation() != null &&  location.getId() == event.getLocation().getId()}"></option>
+        </select>
+    </div>
+    <div>
+        <label for="categoryId">Category ID</label>
+        <select name="categoryId" id="categoryId" th:if="${categories}">
+            <option value="" disabled th:selected="${event.getCategory() == null}">Select Location</option>
+            <option th:each="category : ${categories}"
+                    th:value="${category.getId()}"
+                    th:text="${category.getId()}"
+                    th:selected="${event.getCategory() != null &&  category.getId() == event.getCategory().getId()}"></option>
+        </select>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</form>
+
+</body>
+</html>

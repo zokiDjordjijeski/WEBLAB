@@ -1,7 +1,8 @@
-package com.demotest.wplab1.web;
+package com.demotest.wplab1.web.servlet;
 
 import com.demotest.wplab1.model.Event;
 import com.demotest.wplab1.service.impl.EventServiceImpl;
+import com.demotest.wplab1.service.impl.LocationServiceImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,10 +19,12 @@ import java.util.List;
 @WebServlet(name = "EventListServlet", urlPatterns = {"", "/test", "/test/searchByText", "/test/searchByRating"})
 public class EventListServlet extends HttpServlet {
     private final EventServiceImpl eventService;
+    private final LocationServiceImpl locationService;
     protected final SpringTemplateEngine templateEngine;
 
-    public EventListServlet(EventServiceImpl eventService, SpringTemplateEngine templateEngine) {
+    public EventListServlet(EventServiceImpl eventService, LocationServiceImpl locationService, SpringTemplateEngine templateEngine) {
         this.eventService = eventService;
+        this.locationService = locationService;
         this.templateEngine = templateEngine;
     }
 
@@ -32,8 +35,8 @@ public class EventListServlet extends HttpServlet {
                 .buildExchange(req, resp);
         WebContext webContext = new WebContext(webExchange);
 
-        webContext.setVariable("events", this.eventService.listAll());
-
+        webContext.setVariable("events", this.eventService.listAll().orElseThrow(RuntimeException::new));
+        webContext.setVariable("locations_for_filter", this.locationService.findAll().orElseThrow(RuntimeException::new));
         this.templateEngine.process("listEvents.html", webContext, resp.getWriter());
     }
 
@@ -49,19 +52,19 @@ public class EventListServlet extends HttpServlet {
 
         if (path.equals("/test/searchByText")) {
             String text = req.getParameter("text");
-            events = this.eventService.searchEvent(text);
+            events = this.eventService.searchEvent(text).orElseThrow(RuntimeException::new);
             webContext.setVariable("textSearchResults", events);
         } else if (path.equals("/test/searchByRating")) {
             double rating = Double.parseDouble(req.getParameter("rating"));
-            events = this.eventService.listAll().stream()
+            events = this.eventService.listAll().orElseThrow(RuntimeException::new).stream()
                     .filter(event -> event.getPopularityScore() >= rating)
                     .toList();
             webContext.setVariable("ratingSearchResults", events);
         } else {
-            events = this.eventService.listAll();
+            events = this.eventService.listAll().orElseThrow(RuntimeException::new);
             webContext.setVariable("events", events);
         }
-
+        webContext.setVariable("locations_for_filter", this.locationService.findAll().orElseThrow(RuntimeException::new));
         this.templateEngine.process("listEvents.html", webContext, resp.getWriter());
     }
 }
